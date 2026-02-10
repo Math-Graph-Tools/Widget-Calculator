@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArcadeUnblocked - Cyberpunk Edition</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Rajdhani', 'sans-serif'],
+              display: ['Orbitron', 'sans-serif'],
+            },
+            colors: {
+              cyber: {
+                black: '#050b14',
+                dark: '#0f172a',
+                slate: '#1e293b',
+                neon: '#00f3ff', // Cyan
+                pink: '#ff0099', // Neon Pink
+                purple: '#bd00ff',
+                yellow: '#facc15', // Caution Yellow
+                green: '#22c55e', // New Game Green
+              }
+            },
+            boxShadow: {
+              'neon': '0 0 5px theme("colors.cyber.neon"), 0 0 10px theme("colors.cyber.neon")',
+              'neon-pink': '0 0 5px theme("colors.cyber.pink"), 0 0 10px theme("colors.cyber.pink")',
+              'neon-green': '0 0 5px theme("colors.cyber.green"), 0 0 10px theme("colors.cyber.green")',
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.3s ease-in-out',
+              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float-slow': 'float 4s ease-in-out infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #050b14;
+        color: #f8fafc;
+        overflow-y: scroll;
+        font-family: 'Rajdhani', sans-serif;
+        cursor: auto; /* Default cursor */
+      }
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Orbitron', sans-serif;
+      }
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #050b14;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border: 1px solid #00f3ff;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #00f3ff;
+      }
+      .clip-path-slant {
+        clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+      }
+      .caution-stripe {
+        background: repeating-linear-gradient(
+          45deg,
+          #000,
+          #000 10px,
+          #facc15 10px,
+          #facc15 20px
+        );
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "htm/react": "https://esm.sh/htm@3.1.1/react?deps=react@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "htm/": "https://esm.sh/htm@^3.1.1/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    
+    <script type="module">
+      import React, { useState, useEffect, useRef, useMemo } from 'react';
+      import ReactDOM from 'react-dom/client';
+      import { html } from 'htm/react';
+
+      // ----------------------------------------------------------------------
+      // TYPES & CONSTANTS
+      // ----------------------------------------------------------------------
+
+      // More complex categories
+      const GameCategory = {
+        ALL: 'All Games',
+        HOT: 'Trending',
+        NEW: 'New Arrivals',
+        RHYTHM: 'Rhythm & Music',
+        PHYSICS: 'Physics Chaos',
+        PLATFORMER: 'Precision Platformer',
+        RACING: 'High Speed Racing',
+        SPORTS: 'Competitive Sports',
+        PUZZLE: 'Logic & Puzzle',
+        ARCADE: 'Retro Arcade',
+        SURVIVAL: 'Survival',
+        MULTIPLAYER: 'Local Multiplayer'
+      };
+
+      const GameType = {
+        IFRAME: 'iframe',
+        NATIVE: 'native'
+      };
+
+      const APP_NAME = "NEON ARCADE";
+      // Updated Request URL
+      const REQUEST_GAME_URL = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__ihR0UBUQ0ZONjFaNzRMT1hNTVBVOUZPSUhXOENGSS4u";
+      const PANIC_URL = "https://classroom.google.com";
+
+      const GAMES_DATA = [
+        {
+          id: 'smash-karts',
+          title: 'Smash Karts',
+          description: 'Our newest game! Drive fast, fire rockets, and smash your opponents in this chaotic multiplayer kart battler.',
+          url: 'https://smashkartsio.com/1.embed',
+          thumbnail: 'https://i.ibb.co/5X7mL5L6/smashkarts-io.jpg', // THUMBNAIL UPDATED
+          category: GameCategory.MULTIPLAYER,
+          type: GameType.IFRAME,
+          isNew: true, // NEW GAME
+          isHot: true,
+          popularity: 100 
+        },
+        {
+          id: 'magic-tiles-3',
+          title: 'Magic Tiles 3',
+          description: 'Tap the black tiles to the rhythm of the music. Don\'t miss a beat in this addictive piano arcade game.',
+          url: 'https://html5.gamedistribution.com/58deefb8f63943dcbc5093070b9b5777/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/8LpfQwr8/Magic-Tiles-3.jpg',
+          category: GameCategory.RHYTHM,
+          type: GameType.IFRAME,
+          isHot: true,
+          maintenance: true, // CLOSED!
+          popularity: 98 // High popularity but closed
+        },
+        {
+          id: 'basket-random',
+          title: 'Basket Random',
+          description: 'Score baskets with wacky physics and random players. Play solo or with a friend in this chaotic sports game.',
+          url: 'https://html5.gamedistribution.com/rvvASMiM/bf1268dccb5d43e7970bb3edaa54afc8/index.html?gd_sdk_referrer_url=https%3A%2F%2Ffun.symbaloo.com%2Fhome%2Fmix%2F13ePLWjK81&gd_zone_config=eyJwYXJlbnRVUkwiOiJodHRwczovL2Z1bi5zeW1iYWxvby5jb20vaG9tZS9taXgvMTNlcGx3ams4MSIsInBhcmVudERvbWFpbiI6ImZ1bi5zeW1iYWxvby5jb20iLCJ0b3BEb21haW4iOiJmdW4uc3ltYmFsb28uY29tIiwiaGFzSW1wcmVzc2lvbiI6ZmFsc2UsImxvYWRlckVuYWJsZWQiOnRydWUsImhvc3QiOiJodG1sNS5nYW1lZGlzdHJpYnV0aW9uLmNvbSIsInZlcnNpb24iOiIxLjUuMTgifQ%253D%253D',
+          thumbnail: 'https://i.ibb.co/zVcs9Yj1/Basket-Random.png',
+          category: GameCategory.PHYSICS,
+          type: GameType.IFRAME,
+          isHot: true,
+          popularity: 95
+        },
+        {
+          id: 'roblox-obby-bike',
+          title: 'Roblox Obby on a Bike',
+          description: 'Navigate challenging obstacle courses on a bike in this Roblox-inspired adventure. Keep your balance!',
+          url: 'https://html5.gamedistribution.com/bc2f52c2d9d04e41aee48bef01075d22/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/W452Cjyy/obby-but-youre-on-a-bike.png',
+          category: GameCategory.PLATFORMER,
+          type: GameType.IFRAME,
+          isHot: true,
+          popularity: 92
+        },
+        {
+          id: 'geometry-jump',
+          title: 'Geometry Jump',
+          description: 'Jump and fly your way through danger in this rhythm-based action platformer. Test your reflexes.',
+          url: 'https://html5.gamedistribution.com/9b634d67ddd6407c95effd409b947a76/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/dwv3X39p/geometry-jump.webp',
+          category: GameCategory.RHYTHM,
+          type: GameType.IFRAME,
+          popularity: 88
+        },
+        {
+          id: 'snow-rider-3d',
+          title: 'Snow Rider 3D',
+          description: 'Experience the thrill of sleigh riding down a snowy mountain in 3D. Avoid obstacles and collect gifts.',
+          url: 'https://d11jzht7mj96rr.cloudfront.net/games/2025/unity2/snow-rider-3d/totallyscience/index.html',
+          thumbnail: 'https://i.ibb.co/gM7qZnwX/snow-rider-3-D.webp',
+          category: GameCategory.SPORTS,
+          type: GameType.IFRAME,
+          isHot: true,
+          popularity: 91
+        },
+        {
+          id: 'love-tester',
+          title: 'Love Tester',
+          description: 'Test your love compatibility with this fun calculator game. Enter names and find your match percentage.',
+          url: 'https://d11jzht7mj96rr.cloudfront.net/games/2021/3/love-tester/index-ts.html',
+          thumbnail: 'https://i.ibb.co/ds4wDrSQ/Love-tester.jpg',
+          category: GameCategory.ARCADE,
+          type: GameType.IFRAME,
+          popularity: 75
+        },
+        {
+          id: 'stackball-io',
+          title: 'StackBall.io',
+          description: 'Smash through colorful platforms to reach the bottom of the tower. Avoid the black stacks!',
+          url: 'https://d11jzht7mj96rr.cloudfront.net/games/stackball-io/index.html',
+          thumbnail: 'https://i.ibb.co/QvJFrFG5/stackball-io.jpg',
+          category: GameCategory.ARCADE,
+          type: GameType.IFRAME,
+          popularity: 82
+        },
+        {
+          id: 'eggy-car',
+          title: 'Eggy Car',
+          description: 'Drive carefully to keep the egg safe on top of your car while climbing steep hills. Don\'t crack the egg!',
+          url: 'https://d11jzht7mj96rr.cloudfront.net/games/2025/beedo/eggy-car/index.html',
+          thumbnail: 'https://i.ibb.co/J02ZwZw/Eggy-Car.jpg',
+          category: GameCategory.PHYSICS,
+          type: GameType.IFRAME,
+          isHot: true,
+          popularity: 89
+        },
+        {
+          id: 'moto-x3m-winter',
+          title: 'Moto X3M Winter',
+          description: 'Race your motorbike through icy tracks and perform stunts in this winter edition of the classic Moto X3M.',
+          url: 'https://d11jzht7mj96rr.cloudfront.net/games/2024/gm/moto-x3m-winter/index.html',
+          thumbnail: 'https://i.ibb.co/KjTSTSgq/moto-x3m-Winter.jpg',
+          category: GameCategory.RACING,
+          type: GameType.IFRAME,
+          isHot: true,
+          popularity: 94
+        },
+        {
+          id: 'basketball-stars',
+          title: 'Basketball Stars',
+          description: 'Play solo or with a friend in this intense basketball arcade game. Show off your dunks and 3-pointers with legendary players.',
+          url: 'https://html5.gamedistribution.com/rvvASMiM/69d78d071f704fa183d75b4114ae40ec/index.html?gd_sdk_referrer_url=https%3A%2F%2Ffun.symbaloo.com%2Fhome%2Fmix%2F13ePLWjK81&gd_zone_config=eyJwYXJlbnRVUkwiOiJodHRwczovL2Z1bi5zeW1iYWxvby5jb20vaG9tZS9taXgvMTNlcGx3ams4MSIsInBhcmVudERvbWFpbiI6ImZ1bi5zeW1iYWxvby5jb20iLCJ0b3BEb21haW4iOiJmdW4uc3ltYmFsb28uY29tIiwiaGFzSW1wcmVzc2lvbiI6ZmFsc2UsImxvYWRlckVuYWJsZWQiOnRydWUsImhvc3QiOiJodG1sNS5nYW1lZGlzdHJpYnV0aW9uLmNvbSIsInZlcnNpb24iOiIxLjUuMTgifQ%253D%253D',
+          thumbnail: 'https://i.ibb.co/pv6MR4t4/Basketball-stars.jpg',
+          category: GameCategory.SPORTS,
+          type: GameType.IFRAME,
+          isHot: true,
+          popularity: 90
+        },
+        {
+          id: 'neon-snake',
+          title: 'Neon Snake',
+          description: 'A high-speed, cyber-enhanced version of the classic snake game. Collect data nodes to grow your length while avoiding the firewall boundaries.',
+          thumbnail: 'https://placehold.co/400x300/050b14/00f3ff?text=NEON+SNAKE',
+          category: GameCategory.ARCADE,
+          type: GameType.NATIVE,
+          isHot: true,
+          url: '#', // Not used for native games
+          popularity: 80
+        },
+        {
+          id: 'cyber-pong',
+          title: 'Cyber Pong',
+          description: 'Challenge the AI in this holographic table tennis simulation. Deflect the energy ball and score against the neural network.',
+          thumbnail: 'https://placehold.co/400x300/050b14/bd00ff?text=CYBER+PONG',
+          category: GameCategory.ARCADE,
+          type: GameType.NATIVE,
+          isHot: true,
+          url: '#',
+          popularity: 78
+        },
+        {
+          id: 'obby-tower',
+          title: 'Obby Tower Parkour Climb',
+          description: 'Master the heights in this parkour challenge. Jump, climb, and avoid falling in this Roblox-inspired tower obby.',
+          url: 'https://html5.gamedistribution.com/5532111b774e4ca18238b41c029617e0/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/N2L1d2MH/obby-tower-parkour-climb.jpg',
+          category: GameCategory.PLATFORMER,
+          type: GameType.IFRAME,
+          isHot: true,
+          popularity: 87
+        },
+        {
+          id: 'vex-x3m',
+          title: 'Vex X3m',
+          description: 'Extreme racing challenges await. Navigate difficult courses and perform stunts in this intense bike trial game.',
+          url: 'https://html5.gamedistribution.com/rvvASMiM/0a3c55fe33ba415f9b761b5831e75b27/index.html?gd_sdk_referrer_url=https%3A%2F%2Ffun.symbaloo.com%2Fhome%2Fmix%2F13ePLWjK81&gd_zone_config=eyJwYXJlbnRVUkwiOiJodHRwczovL2Z1bi5zeW1iYWxvby5jb20vaG9tZS9taXgvMTNlcGx3ams4MSIsInBhcmVudERvbWFpbiI6ImZ1bi5zeW1iYWxvby5jb20iLCJ0b3BEb21haW4iOiJmdW4uc3ltYmFsb28uY29tIiwiaGFzSW1wcmVzc2lvbiI6ZmFsc2UsImxvYWRlckVuYWJsZWQiOnRydWUsImhvc3QiOiJodG1sNS5nYW1lZGlzdHJpYnV0aW9uLmNvbSIsInZlcnNpb24iOiIxLjUuMTgifQ%253D%253D',
+          thumbnail: 'https://i.ibb.co/DXbzZK9/Vex-X3m.webp',
+          category: GameCategory.RACING,
+          type: GameType.IFRAME,
+          isHot: true,
+          popularity: 86
+        },
+        {
+          id: 'fireboy-watergirl-1',
+          title: 'Fireboy and Watergirl 1: Forest Temple',
+          description: 'The classic duo adventure begins. Cooperate to solve puzzles and escape the Forest Temple.',
+          url: 'https://html5.gamedistribution.com/a55c9cc9c21e4fc683c8c6857f3d0c75/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/vCRzv5nx/fireboy1.jpg',
+          category: GameCategory.PUZZLE,
+          type: GameType.IFRAME,
+          popularity: 93
+        },
+        {
+          id: 'fireboy-watergirl-2',
+          title: 'Fireboy and Watergirl 2: Light Temple',
+          description: 'Use light beams and mirrors to guide Fireboy and Watergirl through the intricate Light Temple.',
+          url: 'https://html5.gamedistribution.com/383ad09b92c7446b9113cccc29630517/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/ycjJqmwY/Fireboy2.jpg',
+          category: GameCategory.PUZZLE,
+          type: GameType.IFRAME,
+          popularity: 85
+        },
+        {
+          id: 'fireboy-watergirl-3',
+          title: 'Fireboy and Watergirl 3: Ice Temple',
+          description: 'Slide through the frozen chambers. Control the elements to survive the treacherous Ice Temple.',
+          url: 'https://html5.gamedistribution.com/f3a6e1ac0a77412289cbac47658b2b68/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/Z6gZCLfv/Fireboy3.webp',
+          category: GameCategory.PUZZLE,
+          type: GameType.IFRAME,
+          popularity: 83
+        },
+        {
+          id: 'fireboy-watergirl-4',
+          title: 'Fireboy and Watergirl 4: Crystal Temple',
+          description: 'Teleport through portals and solve mind-bending puzzles in the Crystal Temple.',
+          url: 'https://html5.gamedistribution.com/3790681b69584409b7f681a8e400102d/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/4yR7qcL/Fireboy4.png',
+          category: GameCategory.PUZZLE,
+          type: GameType.IFRAME,
+          popularity: 81
+        },
+        {
+          id: 'fireboy-watergirl-5',
+          title: 'Fireboy and Watergirl 5: Elements',
+          description: 'Master all the elements combined. A comprehensive challenge for the ultimate duo.',
+          url: 'https://html5.gamedistribution.com/03f124074b0049f89fdace0cacf8ead5/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/1yw6Yrr/Fireboy5.jpg',
+          category: GameCategory.PUZZLE,
+          type: GameType.IFRAME,
+          popularity: 79
+        },
+        {
+          id: 'fireboy-watergirl-6',
+          title: 'Fireboy & Watergirl 6: Fairy Tales',
+          description: 'Explore a new temple with the help of magical fairies to switch switches and open doors.',
+          url: 'https://html5.gamedistribution.com/56da8a54fe204845b34ccff750d4a60b/?gd_sdk_referrer_url=https://fun.symbaloo.com/home/mix/13ePLWjK81',
+          thumbnail: 'https://i.ibb.co/FkBVZvq8/fireboy6.png',
+          category: GameCategory.PUZZLE,
+          type: GameType.IFRAME,
+          isHot: true,
+          popularity: 88
+        }
+      ];
+
+      // ----------------------------------------------------------------------
+      // UI COMPONENTS
+      // ----------------------------------------------------------------------
+
+      const Button = ({ 
+        children, 
+        variant = 'primary', 
+        size = 'md',
+        icon,
+        className = '',
+        ...props 
+      }) => {
+        const baseStyle = "inline-flex items-center justify-center font-bold tracking-wider uppercase transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed clip-path-slant";
+        
+        const variants = {
+          primary: "bg-cyber-neon text-cyber-black hover:bg-white hover:shadow-neon border border-transparent",
+          secondary: "bg-transparent text-cyber-neon border border-cyber-neon hover:bg-cyber-neon/10 hover:shadow-neon",
+          danger: "bg-cyber-pink text-white hover:bg-red-600 hover:shadow-neon-pink border border-transparent",
+          ghost: "bg-transparent text-slate-400 hover:text-cyber-neon hover:bg-cyber-slate/50"
+        };
+
+        const sizes = {
+          sm: "px-3 py-1 text-xs",
+          md: "px-6 py-2 text-sm",
+          lg: "px-8 py-3 text-base"
+        };
+
+        return html`
+          <button 
+            className=${`${baseStyle} ${variants[variant]} ${sizes[size]} ${className}`}
+            ...${props}
+          >
+            ${icon && html`<span className="mr-2">${icon}</span>`}
+            ${children}
+          </button>
+        `;
+      };
+
+      const GameCard = ({ game, onClick }) => {
+        // Maintenance click handler
+        const handleClick = (e) => {
+          if (game.maintenance) {
+            e.stopPropagation();
+            // Dispatch a custom event or let the parent handle it differently
+            // But since onClick is passed from parent, we can just pass the game 
+            // and let parent decide what to show (e.g. maintenance modal)
+            onClick(game); 
+          } else {
+            onClick(game);
+          }
+        };
+
+        return html`
+          <div 
+            onClick=${handleClick}
+            className=${`group relative bg-cyber-slate rounded-sm overflow-hidden border border-cyber-slate transition-all duration-300 transform hover:-translate-y-1 
+              ${game.maintenance 
+                ? 'cursor-not-allowed border-cyber-yellow/50 opacity-80 hover:shadow-[0_0_15px_#facc15]' 
+                : 'cursor-pointer hover:border-cyber-neon hover:shadow-neon'}`}
+          >
+            <div className="relative aspect-video overflow-hidden">
+              <img 
+                src=${game.thumbnail} 
+                alt=${game.title} 
+                className=${`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100 ${game.maintenance ? 'grayscale brightness-50' : ''}`}
+              />
+              
+              ${game.maintenance && html`
+                <div className="absolute inset-0 caution-stripe opacity-30 z-10 pointer-events-none"></div>
+                <div className="absolute inset-0 flex items-center justify-center z-20">
+                  <div className="bg-cyber-yellow text-black font-black text-sm px-4 py-2 border-2 border-black transform -rotate-12 shadow-lg animate-float-slow text-center leading-tight">
+                    SORRY<br/>WE'RE CLOSED
+                  </div>
+                </div>
+              `}
+
+              <div className="absolute inset-0 bg-gradient-to-t from-cyber-black via-transparent to-transparent opacity-90" />
+              
+              <span className="absolute top-2 right-2 px-2 py-0.5 text-xs font-bold bg-cyber-black/80 text-cyber-neon border border-cyber-neon backdrop-blur-sm z-20">
+                ${game.category.toUpperCase()}
+              </span>
+              
+              ${game.isNew && !game.maintenance && html`
+                <span className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold bg-green-500 text-white shadow-neon-green animate-pulse-fast z-20">
+                  NEW
+                </span>
+              `}
+              
+              ${game.isHot && !game.isNew && !game.maintenance && html`
+                <span className="absolute top-2 left-2 px-2 py-0.5 text-xs font-bold bg-cyber-pink text-white shadow-neon-pink animate-pulse-fast z-20">
+                  HOT
+                </span>
+              `}
+            </div>
+
+            <div className="p-4 relative">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyber-neon to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <h3 className="text-xl font-display font-bold text-white mb-1 group-hover:text-cyber-neon transition-colors truncate">
+                ${game.title}
+              </h3>
+              <p className="text-xs text-slate-400 line-clamp-2 font-light tracking-wide">
+                ${game.description}
+              </p>
+            </div>
+
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-cyber-black/80 backdrop-blur-[1px] z-30">
+              <span className=${`border px-6 py-2 font-display font-bold tracking-widest uppercase text-sm 
+                ${game.maintenance 
+                  ? 'border-cyber-yellow text-cyber-yellow bg-black/50' 
+                  : 'border-cyber-neon text-cyber-neon hover:bg-cyber-neon hover:text-cyber-black transition-colors'}`}>
+                ${game.maintenance ? 'LOCKED' : 'INITIALIZE'}
+              </span>
+            </div>
+          </div>
+        `;
+      };
+
+      // ----------------------------------------------------------------------
+      // NATIVE GAMES
+      // ----------------------------------------------------------------------
+      
+      const NeonSnake = () => {
+        const canvasRef = useRef(null);
+        const [score, setScore] = useState(0);
+        const [gameOver, setGameOver] = useState(false);
+        const [gameStarted, setGameStarted] = useState(false);
+        const CELL_SIZE = 20;
+        const SNAKE_COLOR = '#00f3ff';
+        const FOOD_COLOR = '#ff0099';
+        const gameState = useRef({ snake: [{x: 10, y: 10}], direction: {x: 1, y: 0}, nextDirection: {x: 1, y: 0}, food: {x: 15, y: 15}, gridSize: {w: 0, h: 0}, lastUpdate: 0, interval: 100 });
+        const generateFood = (w, h, snake) => {
+          let newFood; let isColliding;
+          do { newFood = { x: Math.floor(Math.random() * w), y: Math.floor(Math.random() * h) }; isColliding = snake.some(segment => segment.x === newFood.x && segment.y === newFood.y); } while (isColliding);
+          return newFood;
+        };
+        const resetGame = () => {
+          const canvas = canvasRef.current; if (!canvas) return;
+          const w = Math.floor(canvas.width / CELL_SIZE); const h = Math.floor(canvas.height / CELL_SIZE);
+          gameState.current = { snake: [{x: Math.floor(w/2), y: Math.floor(h/2)}], direction: {x: 1, y: 0}, nextDirection: {x: 1, y: 0}, food: generateFood(w, h, [{x: Math.floor(w/2), y: Math.floor(h/2)}]), gridSize: {w, h}, lastUpdate: 0, interval: 100 };
+          setScore(0); setGameOver(false); setGameStarted(true);
+        };
+        useEffect(() => {
+          const canvas = canvasRef.current; const ctx = canvas.getContext('2d'); let animationFrameId;
+          const resize = () => { const parent = canvas.parentElement; canvas.width = parent.clientWidth; canvas.height = parent.clientHeight; if (gameState.current.gridSize.w === 0) { gameState.current.gridSize.w = Math.floor(canvas.width / CELL_SIZE); gameState.current.gridSize.h = Math.floor(canvas.height / CELL_SIZE); gameState.current.food = generateFood(gameState.current.gridSize.w, gameState.current.gridSize.h, gameState.current.snake); } };
+          window.addEventListener('resize', resize); resize(); if (!gameStarted) resetGame();
+          const handleKeyDown = (e) => { const { direction } = gameState.current; switch(e.key) { case 'ArrowUp': case 'w': case 'W': if (direction.y === 0) gameState.current.nextDirection = {x: 0, y: -1}; break; case 'ArrowDown': case 's': case 'S': if (direction.y === 0) gameState.current.nextDirection = {x: 0, y: 1}; break; case 'ArrowLeft': case 'a': case 'A': if (direction.x === 0) gameState.current.nextDirection = {x: -1, y: 0}; break; case 'ArrowRight': case 'd': case 'D': if (direction.x === 0) gameState.current.nextDirection = {x: 1, y: 0}; break; } };
+          window.addEventListener('keydown', handleKeyDown);
+          const update = (timestamp) => {
+            if (gameOver) return;
+            const state = gameState.current; if (timestamp - state.lastUpdate < state.interval) { animationFrameId = requestAnimationFrame(update); return; }
+            state.lastUpdate = timestamp; state.direction = state.nextDirection;
+            const head = { x: state.snake[0].x + state.direction.x, y: state.snake[0].y + state.direction.y };
+            if (head.x < 0 || head.x >= state.gridSize.w || head.y < 0 || head.y >= state.gridSize.h) { setGameOver(true); return; }
+            if (state.snake.some(s => s.x === head.x && s.y === head.y)) { setGameOver(true); return; }
+            const newSnake = [head, ...state.snake];
+            if (head.x === state.food.x && head.y === state.food.y) { setScore(s => s + 10); state.food = generateFood(state.gridSize.w, state.gridSize.h, newSnake); state.interval = Math.max(50, 100 - (newSnake.length * 0.5)); } else { newSnake.pop(); }
+            state.snake = newSnake;
+            ctx.fillStyle = '#050b14'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
+            for (let i = 0; i <= state.gridSize.w; i++) { ctx.beginPath(); ctx.moveTo(i * CELL_SIZE, 0); ctx.lineTo(i * CELL_SIZE, canvas.height); ctx.stroke(); }
+            for (let i = 0; i <= state.gridSize.h; i++) { ctx.beginPath(); ctx.moveTo(0, i * CELL_SIZE); ctx.lineTo(canvas.width, i * CELL_SIZE); ctx.stroke(); }
+            ctx.fillStyle = FOOD_COLOR; ctx.shadowBlur = 15; ctx.shadowColor = FOOD_COLOR; ctx.beginPath(); ctx.arc(state.food.x * CELL_SIZE + CELL_SIZE/2, state.food.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+            ctx.fillStyle = SNAKE_COLOR; ctx.shadowBlur = 10; ctx.shadowColor = SNAKE_COLOR; state.snake.forEach((segment, index) => { if (index === 0) ctx.fillStyle = '#ccfbff'; else ctx.fillStyle = SNAKE_COLOR; ctx.fillRect(segment.x * CELL_SIZE + 1, segment.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2); }); ctx.shadowBlur = 0;
+            animationFrameId = requestAnimationFrame(update);
+          };
+          if (gameStarted && !gameOver) animationFrameId = requestAnimationFrame(update);
+          return () => { window.removeEventListener('resize', resize); window.removeEventListener('keydown', handleKeyDown); cancelAnimationFrame(animationFrameId); };
+        }, [gameOver, gameStarted]);
+        return html`<div className="relative w-full h-full bg-cyber-black flex items-center justify-center overflow-hidden"><canvas ref=${canvasRef} className="block"></canvas><div className="absolute top-4 left-4 text-white font-display text-2xl z-10 select-none pointer-events-none drop-shadow-md">SCORE: <span className="text-cyber-neon">${score}</span></div>${(!gameStarted || gameOver) && html`<div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-20"><h1 className="text-5xl md:text-7xl font-display font-bold text-white mb-4 tracking-tighter animate-pulse">${gameOver ? 'SYSTEM FAILURE' : 'NEON SNAKE'}</h1>${gameOver && html`<p className="text-cyber-pink font-mono mb-8 text-xl">FINAL SCORE: ${score}</p>`}<${Button} onClick=${resetGame} variant="primary" size="lg" className="shadow-neon animate-pulse-fast">${gameOver ? 'REBOOT SYSTEM' : 'INITIALIZE'}</${Button}><p className="mt-8 text-slate-500 font-mono text-sm">USE ARROW KEYS or WASD TO NAVIGATE</p></div>`}</div>`;
+      };
+
+      const CyberPong = () => {
+        const canvasRef = useRef(null); const [playerScore, setPlayerScore] = useState(0); const [aiScore, setAiScore] = useState(0); const [gameStarted, setGameStarted] = useState(false); const [paused, setPaused] = useState(false);
+        const gameState = useRef({ ball: { x: 0, y: 0, dx: 5, dy: 5, size: 10, speed: 7 }, paddleHeight: 100, paddleWidth: 15, playerY: 0, aiY: 0, canvasHeight: 0, canvasWidth: 0 });
+        const resetBall = () => { const s = gameState.current; s.ball.x = s.canvasWidth / 2; s.ball.y = s.canvasHeight / 2; s.ball.dx = (Math.random() > 0.5 ? 1 : -1) * s.ball.speed; s.ball.dy = (Math.random() * 2 - 1) * s.ball.speed; };
+        const startGame = () => { setPlayerScore(0); setAiScore(0); setGameStarted(true); setPaused(false); resetBall(); };
+        useEffect(() => {
+          const canvas = canvasRef.current; const ctx = canvas.getContext('2d'); let animationFrameId;
+          const resize = () => { const parent = canvas.parentElement; canvas.width = parent.clientWidth; canvas.height = parent.clientHeight; gameState.current.canvasWidth = canvas.width; gameState.current.canvasHeight = canvas.height; if (!gameStarted) { gameState.current.playerY = canvas.height / 2 - gameState.current.paddleHeight / 2; gameState.current.aiY = canvas.height / 2 - gameState.current.paddleHeight / 2; } };
+          window.addEventListener('resize', resize); resize();
+          const handleMouseMove = (e) => { if (paused) return; const rect = canvas.getBoundingClientRect(); const rootY = e.clientY - rect.top; gameState.current.playerY = rootY - gameState.current.paddleHeight / 2; };
+          const handleKeyDown = (e) => { if (paused) return; const speed = 40; if (e.key === 'ArrowUp' || e.key === 'w') gameState.current.playerY -= speed; if (e.key === 'ArrowDown' || e.key === 's') gameState.current.playerY += speed; };
+          canvas.addEventListener('mousemove', handleMouseMove); window.addEventListener('keydown', handleKeyDown);
+          const update = () => {
+             if (!gameStarted || paused) return; const s = gameState.current; const { width, height } = canvas;
+             if (s.playerY < 0) s.playerY = 0; if (s.playerY + s.paddleHeight > height) s.playerY = height - s.paddleHeight; if (s.aiY < 0) s.aiY = 0; if (s.aiY + s.paddleHeight > height) s.aiY = height - s.paddleHeight;
+             const aiCenter = s.aiY + s.paddleHeight / 2; if (aiCenter < s.ball.y - 35) s.aiY += 6; else if (aiCenter > s.ball.y + 35) s.aiY -= 6;
+             s.ball.x += s.ball.dx; s.ball.y += s.ball.dy; if (s.ball.y - s.ball.size < 0 || s.ball.y + s.ball.size > height) s.ball.dy *= -1;
+             if (s.ball.x - s.ball.size < s.paddleWidth + 10) { if (s.ball.y > s.playerY && s.ball.y < s.playerY + s.paddleHeight) { s.ball.dx *= -1.1; s.ball.dy = (s.ball.y - (s.playerY + s.paddleHeight/2)) * 0.15; } else if (s.ball.x < 0) { setAiScore(p => p + 1); resetBall(); } }
+             if (s.ball.x + s.ball.size > width - s.paddleWidth - 10) { if (s.ball.y > s.aiY && s.ball.y < s.aiY + s.paddleHeight) { s.ball.dx *= -1.1; s.ball.dy = (s.ball.y - (s.aiY + s.paddleHeight/2)) * 0.15; } else if (s.ball.x > width) { setPlayerScore(p => p + 1); resetBall(); } }
+             ctx.fillStyle = '#050b14'; ctx.fillRect(0, 0, width, height); ctx.beginPath(); ctx.setLineDash([10, 15]); ctx.moveTo(width / 2, 0); ctx.lineTo(width / 2, height); ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
+             ctx.shadowBlur = 10; ctx.shadowColor = '#00f3ff'; ctx.fillStyle = '#00f3ff'; ctx.fillRect(10, s.playerY, s.paddleWidth, s.paddleHeight); ctx.shadowColor = '#bd00ff'; ctx.fillStyle = '#bd00ff'; ctx.fillRect(width - s.paddleWidth - 10, s.aiY, s.paddleWidth, s.paddleHeight);
+             ctx.shadowBlur = 15; ctx.shadowColor = '#ffffff'; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(s.ball.x, s.ball.y, s.ball.size, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+             animationFrameId = requestAnimationFrame(update);
+          };
+          if (gameStarted) animationFrameId = requestAnimationFrame(update);
+          return () => { window.removeEventListener('resize', resize); window.removeEventListener('keydown', handleKeyDown); canvas.removeEventListener('mousemove', handleMouseMove); cancelAnimationFrame(animationFrameId); };
+        }, [gameStarted, paused]);
+        return html`<div className="relative w-full h-full bg-cyber-black overflow-hidden flex flex-col justify-center"><div className="absolute top-4 left-0 right-0 flex justify-center gap-16 font-display text-4xl font-bold z-10 pointer-events-none select-none"><span className="text-cyber-neon drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]">${playerScore}</span><span className="text-cyber-purple drop-shadow-[0_0_10px_rgba(189,0,255,0.5)]">${aiScore}</span></div><canvas ref=${canvasRef} className="block w-full h-full cursor-none"></canvas>${!gameStarted && html`<div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-20"><h1 className="text-6xl font-display font-bold text-white mb-2 tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyber-neon to-cyber-purple">CYBER PONG</h1><p className="text-slate-400 mb-8 font-mono tracking-widest text-sm">VS AI NEURAL NETWORK</p><${Button} onClick=${startGame} variant="primary" size="lg">INIT_MATCH</${Button}><p className="mt-4 text-xs text-slate-600 font-mono">MOUSE TO MOVE // FIRST TO 10</p></div>`}</div>`;
+      };
+      
+      const NATIVE_GAMES = { 'neon-snake': NeonSnake, 'cyber-pong': CyberPong };
+
+      // ----------------------------------------------------------------------
+      // MAIN COMPONENTS
+      // ----------------------------------------------------------------------
+
+      const CyberLoader = () => html`
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-cyber-black overflow-hidden animate-fade-in">
+          <div className="absolute inset-0 opacity-30" 
+            style=${{ 
+              backgroundImage: 'linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+              transform: 'perspective(500px) rotateX(60deg) scale(2)',
+              transformOrigin: 'center -100px',
+              animation: 'gridScroll 10s linear infinite'
+            }}
+          />
+          <div className="relative w-32 h-32 flex items-center justify-center mb-8">
+            <div className="absolute inset-0 border-2 border-transparent border-t-cyber-neon border-r-cyber-neon rounded-full animate-[spin_2s_linear_infinite]"></div>
+            <div className="absolute inset-0 border-2 border-transparent border-t-cyber-neon border-r-cyber-neon rounded-full animate-[spin_2s_linear_infinite] blur-[2px]"></div>
+            <div className="absolute inset-4 border-2 border-transparent border-b-cyber-pink border-l-cyber-pink rounded-full animate-[spin_3s_linear_infinite_reverse]"></div>
+            <div className="absolute inset-10 bg-cyber-neon/10 rounded-full animate-pulse backdrop-blur-sm border border-cyber-neon/30 flex items-center justify-center">
+              <div className="w-2 h-2 bg-cyber-neon rounded-full shadow-[0_0_15px_#00f3ff]"></div>
+            </div>
+          </div>
+          <div className="text-center relative z-20 space-y-4">
+            <div className="text-3xl font-display font-bold text-white tracking-[0.2em] relative">
+              <span className="relative z-10">INITIALIZING</span>
+              <span className="absolute top-0 left-0 -ml-[2px] text-cyber-pink opacity-70 animate-pulse" style=${{clipPath: 'polygon(0 0, 100% 0, 100% 45%, 0 45%)', transform: 'translate(-2px)'}}>INITIALIZING</span>
+              <span className="absolute top-0 left-0 ml-[2px] text-cyber-neon opacity-70 animate-pulse" style=${{clipPath: 'polygon(0 60%, 100% 60%, 100% 100%, 0 100%)', transform: 'translate(2px)'}}>INITIALIZING</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-48 h-1 bg-cyber-slate/50 rounded-full overflow-hidden relative">
+                 <div className="absolute inset-y-0 left-0 bg-cyber-neon w-1/2 animate-[progress_2s_ease-in-out_infinite]"></div>
+              </div>
+              <p className="font-mono text-xs text-cyber-neon/80 tracking-widest animate-pulse">ESTABLISHING UPLINK...</p>
+            </div>
+          </div>
+          <style>@keyframes gridScroll { 0% { background-position: 0 0; } 100% { background-position: 0 40px; } } @keyframes progress { 0% { left: -50%; width: 50%; } 50% { left: 25%; width: 50%; } 100% { left: 100%; width: 50%; } }</style>
+        </div>
+      `;
+
+      const GamePlayer = ({ game, onBack }) => {
+        const [isFullscreen, setIsFullscreen] = useState(false);
+        const [isLoading, setIsLoading] = useState(true);
+        const iframeRef = React.useRef(null);
+
+        const toggleFullscreen = () => {
+          if (!document.fullscreenElement) {
+            const container = document.getElementById('game-container');
+            if (container) container.requestFullscreen().catch(err => console.error(err));
+          } else {
+            document.exitFullscreen();
+          }
+        };
+
+        useEffect(() => {
+          const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
+          document.addEventListener('fullscreenchange', handleFullscreenChange);
+          return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        }, []);
+
+        useEffect(() => {
+          setIsLoading(true);
+          if (game.type === GameType.NATIVE) {
+              const timer = setTimeout(() => setIsLoading(false), 2500);
+              return () => clearTimeout(timer);
+          }
+        }, [game.id, game.type]);
+
+        const isNative = game.type === GameType.NATIVE;
+        const NativeGameComponent = isNative ? NATIVE_GAMES[game.id] : null;
+
+        return html`
+          <div className="animate-fade-in flex flex-col h-full">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 bg-cyber-slate/20 p-4 border border-cyber-slate backdrop-blur-sm gap-4">
+              <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-start">
+                <${Button} onClick=${onBack} variant="secondary" size="sm" icon=${html`<span>←</span>`}>ABORT</${Button}>
+                <h2 className="text-xl font-display font-bold text-white sm:block tracking-wider uppercase truncate max-w-[150px] sm:max-w-none">${game.title}</h2>
+              </div>
+              <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                 <${Button} onClick=${toggleFullscreen} variant="secondary" size="sm" className="hidden md:inline-flex">${isFullscreen ? 'MINIMIZE' : 'FULLSCREEN'}</${Button}>
+                 ${!isNative && html`<${Button} variant="primary" size="sm" onClick=${() => window.open(game.url, '_blank')} title="Open in new tab" className="whitespace-nowrap shadow-neon hover:scale-105 transition-transform">OPEN IN NEW TAB ↗</${Button}>`}
+              </div>
+            </div>
+
+            <div id="game-container" className=${`relative w-full overflow-hidden bg-black border border-cyber-slate shadow-neon-pink/10 flex-grow flex flex-col ${isFullscreen ? 'p-0 border-none' : 'aspect-video md:aspect-auto border-t-2 border-b-2 border-cyber-neon/50'}`}>
+              ${isLoading && html`<${CyberLoader} />`}
+              ${isNative && NativeGameComponent ? html`
+                <div className=${`w-full h-full ${isLoading ? 'hidden' : 'block animate-fade-in'}`}>
+                  <${NativeGameComponent} />
+                </div>
+              ` : html`
+                <iframe ref=${iframeRef} src=${game.url} title=${game.title} className=${`w-full h-full border-0 flex-grow transition-opacity duration-1000 ${isLoading ? 'opacity-0 absolute' : 'opacity-100'}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" sandbox="allow-scripts allow-popups allow-forms allow-same-origin allow-popups-to-escape-sandbox allow-downloads allow-storage-access-by-user-activation allow-pointer-lock" allowFullScreen onLoad=${() => { if (!isNative) setTimeout(() => setIsLoading(false), 500); }} />
+              `}
+            </div>
+            
+            <div className="mt-6 text-slate-400 bg-cyber-slate/10 p-6 border-l-4 border-cyber-neon">
+              <h3 className="text-lg font-display font-bold text-white mb-2 uppercase">Mission Briefing</h3>
+              <p className="font-light">${game.description}</p>
+              <p className="mt-2 text-xs text-cyber-neon font-mono font-bold">${isNative ? '// SYSTEM ALERT: NATIVE SIMULATION LOADED.' : '// SYSTEM ALERT: IF SCREEN REMAINS BLACK, CLICK "OPEN IN NEW TAB".'}</p>
+            </div>
+          </div>
+        `;
+      };
+
+      const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic }) => {
+        const [date, setDate] = useState(new Date());
+        const [ping, setPing] = useState('Checking...');
+        const [deviceType, setDeviceType] = useState('Unknown');
+
+        useEffect(() => {
+          const timer = setInterval(() => setDate(new Date()), 1000);
+          
+          const checkPing = async () => {
+              if (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean' && !navigator.onLine) {
+                  setPing('OFFLINE'); return;
+              }
+              const start = performance.now();
+              try {
+                  await fetch(window.location.href.split('#')[0], { method: 'HEAD', cache: 'no-store', mode: 'no-cors' });
+                  const latency = Math.round(performance.now() - start);
+                  setPing(`${Math.max(1, latency)}ms`);
+              } catch (e) {
+                  const simulatedPing = Math.floor(Math.random() * 15) + 5;
+                  setPing(`${simulatedPing}ms`);
+              }
+          };
+          checkPing();
+          const pingTimer = setInterval(checkPing, 5000);
+
+          const ua = navigator.userAgent;
+          if (/Mobi|Android/i.test(ua)) setDeviceType('MOBILE DEVICE'); else setDeviceType('DESKTOP TERMINAL');
+
+          return () => { clearInterval(timer); clearInterval(pingTimer); };
+        }, []);
+
+        const dateStr = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${date.getFullYear()}`;
+
+        // Static Version for manual updates
+        const version = "v4.0.1 (MINOR)"; 
+
+        return html`
+          <div className="relative min-h-screen bg-[#050b14] overflow-hidden flex flex-col font-sans animate-fade-in text-white selection:bg-cyber-neon selection:text-black">
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+              <div className="absolute inset-0" style=${{ backgroundImage: 'linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px)', backgroundSize: '50px 50px', transform: 'perspective(1000px) rotateX(60deg) translateY(-100px) scale(1.5)', animation: 'gridMove 20s linear infinite' }}></div>
+            </div>
+            <style>@keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 50px; } } @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } } .animate-float { animation: float 6s ease-in-out infinite; }</style>
+
+            <header className="relative z-10 flex justify-between items-center px-8 py-6 border-b border-cyber-slate/50 bg-[#050b14]/90 backdrop-blur-md">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2"><div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div><span className="font-mono text-xs text-cyber-neon tracking-widest">NET: ${ping}</span></div>
+                <div className="font-mono text-xs text-slate-400 tracking-widest uppercase">SYS: ${deviceType}</div>
+              </div>
+              <div className="font-display font-bold text-2xl tracking-[0.2em] text-white shadow-neon-pink drop-shadow-md">NEON BASE</div>
+              <div className="flex items-center">
+                  <${Button} onClick=${onPanic} variant="danger" size="md" className="shadow-[0_0_20px_rgba(255,0,0,0.6)] animate-pulse hover:animate-none font-black tracking-widest border-2 border-red-500">PANIC EXIT</${Button}>
+              </div>
+            </header>
+
+            <main className="relative z-10 flex-grow flex flex-col items-center justify-center p-6 md:p-12 gap-8">
+              <div className="text-center space-y-2 animate-float">
+                <h1 className="text-5xl md:text-7xl font-display font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyber-neon via-white to-cyber-purple drop-shadow-[0_0_15px_rgba(0,243,255,0.5)]">WELCOME USER</h1>
+                <div className="text-4xl md:text-6xl font-mono font-bold text-white tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] py-2">${date.toLocaleTimeString()}</div>
+                <div className="text-2xl md:text-4xl font-mono font-bold text-cyber-neon tracking-widest drop-shadow-[0_0_10px_rgba(0,243,255,0.8)] mb-4">${dateStr}</div>
+                <p className="text-cyber-neon font-mono text-sm md:text-base tracking-[0.3em] uppercase drop-shadow-[0_0_5px_rgba(0,243,255,0.5)]">// Select Protocol to Initialize</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mt-8">
+                <div onClick=${onEnterLibrary} className="group relative h-64 bg-gradient-to-br from-cyber-slate/20 to-cyber-black border border-cyber-slate/50 hover:border-cyber-neon p-6 cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,243,255,0.15)] flex flex-col justify-between">
+                  <div className="absolute inset-0 bg-cyber-neon/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 mb-4 text-cyber-neon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg></div>
+                    <h2 className="text-3xl font-display font-bold text-white group-hover:text-cyber-neon transition-colors">GAME LIBRARY</h2>
+                    <p className="text-slate-400 mt-2 font-mono text-xs">ACCESS FULL DATABASE</p>
+                  </div>
+                  <div className="flex justify-end"><span className="text-cyber-neon font-bold text-lg opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-4 group-hover:translate-x-0">ENTER →</span></div>
+                </div>
+
+                <div onClick=${() => onQuickPlay(featuredGame)} className="group relative h-64 bg-black border border-cyber-pink/50 hover:border-cyber-pink p-0 cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,0,153,0.2)]">
+                  <img src=${featuredGame.thumbnail} alt="Featured" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity group-hover:scale-110 duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                  <div className="absolute top-0 right-0 bg-cyber-pink text-white text-xs font-bold px-3 py-1 shadow-neon-pink animate-pulse">FEATURED</div>
+                  <div className="absolute bottom-0 left-0 p-6 w-full">
+                    <p className="text-cyber-pink font-mono text-xs mb-1">RECOMMENDED PROTOCOL</p>
+                    <h2 className="text-2xl font-display font-bold text-white mb-2 truncate">${featuredGame.title}</h2>
+                    <button className="bg-cyber-pink/20 border border-cyber-pink text-white px-4 py-2 text-xs font-bold hover:bg-cyber-pink transition-colors w-full uppercase tracking-wider">LAUNCH NOW</button>
+                  </div>
+                </div>
+
+                <div onClick=${() => onQuickPlay()} className="group relative h-64 bg-gradient-to-br from-cyber-slate/20 to-cyber-black border border-cyber-purple/50 hover:border-cyber-purple p-6 cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(189,0,255,0.2)] flex flex-col justify-between">
+                   <div className="absolute inset-0 bg-cyber-purple/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                   <div className="relative z-10">
+                    <div className="w-12 h-12 mb-4 text-cyber-purple"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                    <h2 className="text-3xl font-display font-bold text-white group-hover:text-cyber-purple transition-colors">QUICK PLAY</h2>
+                    <p className="text-slate-400 mt-2 font-mono text-xs">RANDOM DEPLOYMENT</p>
+                  </div>
+                   <div className="flex justify-end"><span className="text-cyber-purple font-bold text-lg opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-4 group-hover:translate-x-0">ROLL →</span></div>
+                </div>
+              </div>
+            </main>
+
+            <footer className="relative z-10 bg-black border-t-2 border-white py-4 overflow-hidden shadow-[0_-5px_20px_rgba(255,255,255,0.1)]">
+              <!-- Updated BIGGER Marquee with dynamic text -->
+              <div className="whitespace-nowrap animate-[marquee_25s_linear_infinite] font-mono text-4xl font-black text-white tracking-widest drop-shadow-[0_0_10px_white] py-2 flex items-center">
+                <span className="text-cyber-neon mx-12">/// SYSTEM UPDATE ${version}: VISUAL PATCH APPLIED</span>
+                <span className="mx-12">NEW GAME DETECTED: SMASH KARTS</span>
+                <span className="text-cyber-pink mx-12">/// ALERT: MAGIC TILES 3 UNDER MAINTENANCE</span>
+                <span className="mx-12">/// WEEKLY TOP 3 LEADERBOARD ACTIVE</span>
+                <span className="mx-12">/// 2026 COPYRIGHT NEON ARCADE</span>
+                <span className="text-cyber-purple mx-12">/// REPORT BUGS VIA REQUEST FORM</span>
+              </div>
+            </footer>
+            <style>@keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }</style>
+          </div>
+        `;
+      };
+
+      const Clock = () => {
+        const [date, setDate] = useState(new Date());
+        useEffect(() => {
+          const timer = setInterval(() => setDate(new Date()), 1000);
+          return () => clearInterval(timer);
+        }, []);
+        
+        const dateStr = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${date.getFullYear()}`;
+        
+        return html`
+          <div className="flex flex-col items-end mr-4 font-mono text-white drop-shadow-[0_0_5px_rgba(0,243,255,0.5)]">
+            <span className="text-2xl md:text-3xl font-bold leading-none tracking-wider">${date.toLocaleTimeString()}</span>
+            <span className="text-sm md:text-base text-cyber-neon font-bold tracking-widest">${dateStr}</span>
+          </div>
+        `;
+      };
+
+      const BootSequence = ({ onComplete }) => {
+        const [lines, setLines] = useState([]);
+        const [progress, setProgress] = useState(0);
+
+        useEffect(() => {
+          const bootText = ["INITIALIZING NEON CORE V4.0...","CHECKING MEMORY INTEGRITY...","LOADING ASSETS...","VERIFYING SECURITY PROTOCOLS...","ESTABLISHING SECURE CONNECTION...","DECRYPTING GAME DATABASE...","SYSTEM READY."];
+          let currentLine = 0;
+          const textInterval = setInterval(() => { if (currentLine < bootText.length) { setLines(prev => [...prev, bootText[currentLine]]); currentLine++; } }, 400);
+          const progressInterval = setInterval(() => { setProgress(prev => { if (prev >= 100) return 100; return Math.min(prev + Math.random() * 5, 100); }); }, 100);
+          const totalTime = (bootText.length * 400) + 500;
+          const timeout = setTimeout(() => { onComplete(); }, totalTime);
+          return () => { clearInterval(textInterval); clearInterval(progressInterval); clearTimeout(timeout); };
+        }, [onComplete]);
+
+        return html`
+          <div className="fixed inset-0 bg-[#000000] z-[100] flex flex-col items-center justify-center p-8 font-mono text-cyber-neon text-sm md:text-base cursor-wait selection:bg-cyber-pink selection:text-white overflow-hidden">
+            <div className="w-full max-w-lg mb-12 relative">
+               <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 text-6xl opacity-10 font-display font-bold select-none">SYSTEM</div>
+               <div className="space-y-2 font-bold tracking-wider">${lines.map((line, i) => html`<div key=${i} className="animate-fade-in drop-shadow-[0_0_5px_rgba(0,243,255,0.5)]">> ${line}</div>`)}<div className="animate-pulse">> _</div></div>
+            </div>
+            <div className="w-full max-w-lg space-y-2">
+               <div className="flex justify-between text-xs text-cyber-slate uppercase tracking-widest"><span>System Boot</span><span>${Math.floor(progress)}%</span></div>
+               <div className="w-full h-2 bg-cyber-slate/30 border border-cyber-slate/50 rounded-sm overflow-hidden relative"><div className="h-full bg-cyber-neon shadow-[0_0_10px_#00f3ff] transition-all duration-75 relative" style=${{ width: `${progress}%` }}><div className="absolute right-0 top-0 bottom-0 w-1 bg-white opacity-50"></div></div></div>
+            </div>
+            <div className="absolute bottom-8 text-xs text-cyber-slate/50 font-mono text-center">NEON ARCADE OS // v2.4.1 // UNBLOCKED</div>
+          </div>
+        `;
+      };
+
+      const WelcomeModal = ({ onClose }) => {
+        const [timeLeft, setTimeLeft] = useState(5);
+        useEffect(() => { if (timeLeft > 0) { const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000); return () => clearTimeout(timer); } }, [timeLeft]);
+
+        return html`
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+            <div className="bg-[#0a0f1e] border border-cyber-neon shadow-[0_0_30px_rgba(0,243,255,0.2)] max-w-lg w-full relative p-1">
+              <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-cyber-neon"></div><div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-cyber-neon"></div><div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-cyber-neon"></div><div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyber-neon"></div>
+              <div className="bg-cyber-black/90 p-8 text-center space-y-6">
+                <div className="mb-6"><h2 className="text-2xl font-display font-bold text-white tracking-widest uppercase">System Notification</h2><div className="h-0.5 w-24 bg-cyber-neon mx-auto mt-2 shadow-[0_0_10px_#00f3ff]"></div></div>
+                <div className="text-slate-300 space-y-4 font-sans text-lg leading-relaxed"><p className="animate-fade-in">Welcome to my unblocked games website.</p><p className="animate-fade-in delay-100">Most games should be operationonal and working.</p><div className="text-left bg-cyber-pink/10 border-l-4 border-cyber-pink p-4 mt-4 animate-fade-in delay-200"><p className="text-cyber-pink font-bold text-sm uppercase tracking-wide mb-1">Warning // W.I.P</p><p className="text-white text-sm">Note: this website is still a W.I.P so please be mindful that there could be bugs or errors! Enjoy ;)</p></div></div>
+                <div className="pt-6"><button onClick=${onClose} disabled=${timeLeft > 0} className=${`w-full py-3 font-display font-bold uppercase tracking-widest transition-all duration-300 border ${timeLeft > 0 ? 'border-slate-800 text-slate-600 bg-black/50 cursor-not-allowed' : 'border-cyber-neon text-cyber-black bg-cyber-neon hover:bg-white hover:shadow-[0_0_20px_#00f3ff] hover:scale-[1.02]'}`}>${timeLeft > 0 ? `INITIALIZING... (${timeLeft}s)` : 'ACKNOWLEDGE & ENTER'}</button></div>
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
+      const LibraryWarningModal = ({ onClose }) => {
+        return html`
+           <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-fade-in">
+             <div className="bg-red-950/30 border-2 border-red-500 shadow-[0_0_50px_rgba(255,0,0,0.4)] max-w-2xl w-full p-8 relative overflow-hidden">
+               <div className="absolute inset-0 caution-stripe opacity-10 pointer-events-none"></div>
+               <div className="relative z-10 text-center">
+                 <h1 className="text-4xl font-display font-black text-red-500 mb-6 tracking-tighter uppercase animate-pulse">Network Alert</h1>
+                 <p className="text-xl text-white font-mono mb-8 leading-relaxed">
+                   WARNING: We are currently aware of the games being blocked, please be patient while we are fixing this issue.
+                 </p>
+                 <button onClick=${onClose} className="bg-red-600 text-white font-bold py-3 px-8 uppercase tracking-widest hover:bg-red-500 hover:shadow-[0_0_20px_rgba(255,0,0,0.6)] transition-all">
+                   I Understand
+                 </button>
+               </div>
+             </div>
+           </div>
+        `;
+      };
+
+      const MaintenanceModal = ({ onClose, gameTitle }) => {
+        return html`
+          <div className="fixed inset-0 z-[250] flex items-center justify-center bg-black/90 backdrop-blur-lg p-4 animate-fade-in" onClick=${onClose}>
+             <div className="bg-cyber-yellow/10 border-4 border-cyber-yellow p-10 max-w-md w-full relative transform rotate-1" onClick=${e => e.stopPropagation()}>
+                <div className="absolute -top-6 -left-6 text-6xl transform -rotate-12">🚧</div>
+                <div className="absolute -bottom-6 -right-6 text-6xl transform rotate-12">🚧</div>
+                <h2 className="text-4xl font-display font-black text-cyber-yellow mb-4 text-center uppercase tracking-tighter">Maintenance</h2>
+                <div className="h-1 bg-cyber-yellow mb-6"></div>
+                <p className="text-white text-lg font-mono text-center mb-6">
+                  <span className="text-cyber-yellow font-bold">${gameTitle}</span> is currently closed for repairs and upgrades.
+                </p>
+                <p className="text-slate-400 text-sm text-center mb-8">Please check back later.</p>
+                <button onClick=${onClose} className="w-full bg-cyber-yellow text-black font-black py-3 uppercase tracking-widest hover:bg-white hover:scale-105 transition-transform">
+                  Understood
+                </button>
+             </div>
+          </div>
+        `;
+      };
+
+      const App = () => {
+        const [activeGame, setActiveGame] = useState(null);
+        const [isBooting, setIsBooting] = useState(true);
+        const [showWelcome, setShowWelcome] = useState(false);
+        const [view, setView] = useState('HOME');
+        const [filter, setFilter] = useState({ search: '', category: GameCategory.ALL });
+        const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+        const [showLibraryWarning, setShowLibraryWarning] = useState(false);
+        const [maintenanceGame, setMaintenanceGame] = useState(null);
+
+        const handlePanic = () => { try { if (window.top && window.top !== window.self) window.top.location.replace(PANIC_URL); else window.location.replace(PANIC_URL); } catch (e) { window.location.replace(PANIC_URL); } };
+
+        useEffect(() => {
+          let lastEscTime = 0;
+          const handleKeyDown = (e) => { if (e.key === 'Escape') { const currentTime = new Date().getTime(); if (currentTime - lastEscTime < 500) handlePanic(); lastEscTime = currentTime; } };
+          window.addEventListener('keydown', handleKeyDown); return () => window.removeEventListener('keydown', handleKeyDown);
+        }, []);
+
+        const filteredGames = useMemo(() => {
+          return GAMES_DATA.filter(game => {
+            const matchesSearch = game.title.toLowerCase().includes(filter.search.toLowerCase());
+            const matchesCategory = filter.category === GameCategory.ALL || (filter.category === GameCategory.HOT && game.isHot) || (filter.category === GameCategory.NEW && game.isNew) || game.category === filter.category;
+            return matchesSearch && matchesCategory;
+          });
+        }, [filter]);
+
+        // Logic for Trending Top 3 (Based on fake popularity)
+        const weeklyTop3 = useMemo(() => {
+          return [...GAMES_DATA].sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 3);
+        }, []);
+
+        const featuredGame = useMemo(() => {
+          // Exclude maintenance games from being featured
+          const hotGames = GAMES_DATA.filter(g => g.isHot && !g.maintenance);
+          const targetGames = hotGames.length > 0 ? hotGames : GAMES_DATA.filter(g => !g.maintenance);
+          const now = new Date();
+          const dateKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+          let hash = 0;
+          for (let i = 0; i < dateKey.length; i++) { hash = ((hash << 5) - hash) + dateKey.charCodeAt(i); hash = hash & hash; }
+          const index = Math.abs(hash) % targetGames.length;
+          return targetGames[index];
+        }, []);
+
+        const handleBootComplete = () => {
+          setIsBooting(false);
+          const hasSeenWelcome = localStorage.getItem('neon_arcade_welcome_ack_v1');
+          if (!hasSeenWelcome) setShowWelcome(true);
+        };
+        const handleCloseWelcome = () => { localStorage.setItem('neon_arcade_welcome_ack_v1', 'true'); setShowWelcome(false); };
+        
+        const handleEnterLibrary = () => {
+           setView('LIBRARY');
+           const hasSeenLibWarning = localStorage.getItem('neon_arcade_lib_warning_v1');
+           if (!hasSeenLibWarning) {
+              setShowLibraryWarning(true);
+           }
+        };
+
+        const handleCloseLibWarning = () => {
+           localStorage.setItem('neon_arcade_lib_warning_v1', 'true');
+           setShowLibraryWarning(false);
+        };
+
+        const handleGameClick = (game) => {
+           if (game.maintenance) {
+              setMaintenanceGame(game);
+           } else {
+              setActiveGame(game);
+           }
+        };
+
+        const handleQuickPlay = (specificGame = null) => { 
+           if (specificGame) {
+              if (specificGame.maintenance) {
+                 setMaintenanceGame(specificGame);
+              } else {
+                 setActiveGame(specificGame); 
+              }
+           } else { 
+              // Pick random non-maintenance game
+              const availableGames = GAMES_DATA.filter(g => !g.maintenance);
+              const randomGame = availableGames[Math.floor(Math.random() * availableGames.length)]; 
+              setActiveGame(randomGame); 
+           } 
+        };
+
+        if (isBooting) return html`<${BootSequence} onComplete=${handleBootComplete} />`;
+
+        if (activeGame) {
+          const PanicIcon = html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 animate-pulse"><path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" /></svg>`;
+          return html`
+            <div className="min-h-screen bg-cyber-black text-slate-200 flex flex-col font-sans animate-fade-in cursor-auto">
+              <header className="h-16 border-b border-cyber-slate bg-cyber-black sticky top-0 z-50 px-4 flex items-center justify-between shadow-neon-pink/20">
+                 <div className="flex items-center gap-2 cursor-pointer hover:text-cyber-neon transition-colors" onClick=${() => { setActiveGame(null); setView('HOME'); }}><span className="text-xl">←</span><span className="font-display font-bold tracking-widest hidden sm:inline">EXIT SIMULATION</span></div>
+                 <div className="flex items-center gap-4"><${Clock} /><${Button} onClick=${handlePanic} variant="danger" size="md" icon=${PanicIcon} className="shadow-[0_0_15px_rgba(255,0,0,0.7)] hover:shadow-[0_0_25px_rgba(255,0,0,1)] font-bold tracking-widest border border-white/20">PANIC</${Button}></div>
+              </header>
+              <main className="flex-grow p-0 sm:p-4 h-[calc(100vh-64px)] bg-black"><${GamePlayer} game=${activeGame} onBack=${() => { setActiveGame(null); setView('LIBRARY'); }} /></main>
+            </div>
+          `;
+        }
+
+        if (view === 'HOME') {
+          return html`<div>${showWelcome && html`<${WelcomeModal} onClose=${handleCloseWelcome} />`}<${HomeMenu} onEnterLibrary=${handleEnterLibrary} onQuickPlay=${handleQuickPlay} featuredGame=${featuredGame} onPanic=${handlePanic} />${maintenanceGame && html`<${MaintenanceModal} gameTitle=${maintenanceGame.title} onClose=${() => setMaintenanceGame(null)} />`}</div>`;
+        }
+
+        const SidebarItem = ({ category, label, icon }) => {
+          const isActive = filter.category === category;
+          return html`<button onClick=${() => setFilter(prev => ({ ...prev, category }))} className=${`w-full text-left px-4 py-3 text-sm font-bold uppercase tracking-wider transition-all border-l-2 flex items-center gap-3 ${isActive ? 'border-cyber-neon bg-cyber-neon/10 text-cyber-neon shadow-[inset_10px_0_20px_-10px_rgba(0,243,255,0.2)]' : 'border-transparent text-slate-500 hover:text-slate-200 hover:bg-white/5'}`}><span>${icon}</span>${label}</button>`;
+        };
+
+        const PanicIcon = html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 animate-pulse"><path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" /></svg>`;
+
+        return html`
+          <div className="min-h-screen bg-[#050b14] text-slate-200 font-sans flex overflow-hidden animate-fade-in">
+            ${showWelcome && html`<${WelcomeModal} onClose=${handleCloseWelcome} />`}
+            ${showLibraryWarning && html`<${LibraryWarningModal} onClose=${handleCloseLibWarning} />`}
+            ${maintenanceGame && html`<${MaintenanceModal} gameTitle=${maintenanceGame.title} onClose=${() => setMaintenanceGame(null)} />`}
+
+            <aside className=${`fixed inset-y-0 left-0 z-40 w-64 bg-[#0a0f1e] border-r border-cyber-slate/50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0`}>
+              <div className="h-20 flex items-center px-6 border-b border-cyber-slate/50 cursor-pointer" onClick=${() => setView('HOME')}><div className="w-8 h-8 bg-cyber-neon text-cyber-black flex items-center justify-center font-bold font-display text-xl mr-3 shadow-neon">N</div><h1 className="font-display font-bold text-xl tracking-wider text-white italic">NEON</h1></div>
+              <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-80px)]">
+                <button onClick=${() => setView('HOME')} className="w-full text-left px-4 py-3 text-sm font-bold uppercase tracking-wider transition-all border-l-2 border-transparent text-slate-400 hover:text-white hover:bg-white/5 flex items-center gap-3 mb-4"><span>🏠</span>BASE / HOME</button>
+                <div className="text-xs font-mono text-slate-600 mb-2 px-4 mt-2">DISCOVER</div>
+                <${SidebarItem} category=${GameCategory.ALL} label="All Games" icon="👾" /><${SidebarItem} category=${GameCategory.NEW} label="New Arrivals" icon="✨" /><${SidebarItem} category=${GameCategory.HOT} label="Trending" icon="🔥" />
+                <div className="text-xs font-mono text-slate-600 mb-2 px-4 mt-6">GENRES</div>
+                <${SidebarItem} category=${GameCategory.ACTION} label="Action" icon="⚔️" /><${SidebarItem} category=${GameCategory.RACING} label="Racing" icon="🏎️" /><${SidebarItem} category=${GameCategory.SPORTS} label="Sports" icon="🏀" /><${SidebarItem} category=${GameCategory.STRATEGY} label="Strategy" icon="🧠" /><${SidebarItem} category=${GameCategory.PUZZLE} label="Puzzle" icon="🧩" />
+                <${SidebarItem} category=${GameCategory.RHYTHM} label="Rhythm" icon="🎵" /><${SidebarItem} category=${GameCategory.PHYSICS} label="Physics" icon="⚛️" /><${SidebarItem} category=${GameCategory.PLATFORMER} label="Platformer" icon="🏃" />
+                <div className="mt-8 px-4"><a href=${REQUEST_GAME_URL} target="_blank" className="block text-center py-2 border border-dashed border-slate-600 text-slate-500 text-xs hover:border-cyber-neon hover:text-cyber-neon transition-colors">+ REQUEST GAME</a></div>
+              </nav>
+            </aside>
+            <div className="flex-1 flex flex-col h-screen overflow-hidden">
+              <header className="h-20 bg-[#050b14]/95 backdrop-blur border-b border-cyber-slate/50 flex items-center justify-between px-4 sm:px-8 z-30">
+                <button className="md:hidden text-white" onClick=${() => setIsSidebarOpen(!isSidebarOpen)}><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+                <div className="flex-1 max-w-xl mx-4"><div className="relative"><span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">🔍</span><input type="text" placeholder="Search database..." className="w-full bg-[#0f172a] text-white border-none rounded-sm py-2 pl-10 pr-4 focus:ring-1 focus:ring-cyber-neon placeholder-slate-600" value=${filter.search} onChange=${(e) => setFilter(prev => ({ ...prev, search: e.target.value }))} /></div></div>
+                <div className="flex items-center gap-4"><${Clock} /><${Button} onClick=${handlePanic} variant="danger" size="md" icon=${PanicIcon} className="shadow-[0_0_15px_rgba(255,0,0,0.7)] hover:shadow-[0_0_25px_rgba(255,0,0,1)] font-bold tracking-widest border border-white/20">PANIC</${Button}></div>
+              </header>
+              <main className="flex-1 overflow-y-auto p-4 sm:p-8 scrollbar-thin scrollbar-thumb-cyber-slate scrollbar-track-transparent">
+                
+                ${filter.category === GameCategory.ALL && !filter.search && html`
+                  <div className="mb-8 p-6 bg-gradient-to-r from-cyber-purple/20 to-transparent border-l-4 border-cyber-purple">
+                    <h3 className="text-2xl font-display font-bold text-white mb-4 uppercase tracking-widest">Weekly Top 3</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      ${weeklyTop3.map((game, index) => html`
+                         <div onClick=${() => handleGameClick(game)} className="bg-black/40 p-4 flex items-center gap-4 border border-white/10 hover:border-cyber-purple transition-all cursor-pointer group">
+                            <span className="text-4xl font-black text-white/10 group-hover:text-cyber-purple transition-colors">0${index + 1}</span>
+                            <div>
+                               <div className="font-bold text-white truncate">${game.title}</div>
+                               <div className="text-xs text-cyber-purple">${game.category}</div>
+                            </div>
+                         </div>
+                      `)}
+                    </div>
+                  </div>
+                `}
+
+                <div className="mb-6 flex items-end justify-between">
+                  <div><h2 className="text-3xl font-display font-bold text-white uppercase tracking-tight">${filter.category === GameCategory.ALL ? 'System Library' : filter.category}</h2><p className="text-slate-500 font-mono text-sm mt-1">// ${filteredGames.length} TITLES LOADED</p></div>
+                </div>
+                ${filteredGames.length > 0 ? html`<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">${filteredGames.map((game) => html`<${GameCard} key=${game.id} game=${game} onClick=${handleGameClick} />`)}</div>` : html`<div className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-cyber-slate/30 rounded-lg"><p className="text-slate-500 font-display text-xl">NO GAMES FOUND</p><button className="mt-4 text-cyber-neon hover:underline" onClick=${() => setFilter({ search: '', category: GameCategory.ALL })}>Reset Filters</button></div>`}
+              </main>
+            </div>
+          </div>
+        `;
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(html`<${App} />`);
+    </script>
+  </body>
+</html>
