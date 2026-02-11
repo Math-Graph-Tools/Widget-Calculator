@@ -259,8 +259,10 @@ const App = () => {
   const handleGameClick = (game) => { 
     if (game.maintenance) { 
         setMaintenanceGame(game); 
-    } 
-    // If not maintenance, the Anchor tag in GameCard handles the hash change
+    } else {
+        // Explicitly set hash for non-anchor clicks (like Top 3)
+        window.location.hash = `#/game/${game.id}`;
+    }
   };
 
   const handleQuickPlay = (specificGame = null) => { 

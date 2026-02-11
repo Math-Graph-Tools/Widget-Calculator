@@ -53,7 +53,7 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
   const dateStr = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${date.getFullYear()}`;
   
   return html`
-    <div className="relative min-h-screen bg-[#050b14] overflow-hidden flex flex-col font-sans animate-fade-in text-white selection:bg-cyber-neon selection:text-black">
+    <div className="relative h-screen bg-[#050b14] overflow-y-auto overflow-x-hidden flex flex-col font-sans animate-fade-in text-white selection:bg-cyber-neon selection:text-black scrollbar-thin scrollbar-thumb-cyber-slate scrollbar-track-transparent">
       
       <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
         <div className="absolute inset-0" 
@@ -77,7 +77,7 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
         .animate-float { animation: float 6s ease-in-out infinite; }
       </style>
 
-      <header className="relative z-10 flex justify-between items-center px-8 py-6 border-b border-cyber-slate/50 bg-[#050b14]/90 backdrop-blur-md">
+      <header className="relative z-10 flex justify-between items-center px-8 py-6 border-b border-cyber-slate/50 bg-[#050b14]/90 backdrop-blur-md flex-shrink-0">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
@@ -181,7 +181,7 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
         </div>
       </main>
 
-      <footer className="relative z-10 bg-black border-t-2 border-white py-3 overflow-hidden shadow-[0_-5px_20px_rgba(255,255,255,0.1)]">
+      <footer className="relative z-10 bg-black border-t-2 border-white py-3 overflow-hidden shadow-[0_-5px_20px_rgba(255,255,255,0.1)] flex-shrink-0">
         <div className="whitespace-nowrap animate-[marquee_35s_linear_infinite] font-mono text-4xl font-black text-white tracking-widest drop-shadow-[0_0_10px_white] py-2 flex items-center">
             <span className="text-cyber-neon mx-12">/// SYSTEM UPDATE: HYPERLINKS AND ROUTING ADDED</span>
             <span className="mx-12">/// NATIVE GAMES ENABLED: NEON SNAKE & PONG</span>
