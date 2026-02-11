@@ -4,19 +4,16 @@ import { html } from 'htm/react';
 import { Button } from './Button.js';
 
 export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic }) => {
-  const [time, setTime] = useState(new Date().toLocaleTimeString());
+  const [date, setDate] = useState(new Date());
   const [ping, setPing] = useState('Checking...');
   const [deviceType, setDeviceType] = useState('Unknown');
 
   useEffect(() => {
-    // Clock Timer
     const timer = setInterval(() => {
-      setTime(new Date().toLocaleTimeString());
+      setDate(new Date());
     }, 1000);
 
-    // Ping Check
     const checkPing = async () => {
-        // 1. Check Browser Network Status
         if (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean' && !navigator.onLine) {
             setPing('OFFLINE');
             return;
@@ -24,9 +21,6 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
 
         const start = performance.now();
         try {
-            // 2. Try to measure actual latency
-            // mode: 'no-cors' allows us to measure time even if CORS headers are missing
-            // cache: 'no-store' ensures we aren't measuring cache retrieval speed
             await fetch(window.location.href.split('#')[0], { 
                 method: 'HEAD', 
                 cache: 'no-store',
@@ -35,8 +29,6 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
             const latency = Math.round(performance.now() - start);
             setPing(`${Math.max(1, latency)}ms`);
         } catch (e) {
-            // 3. Fallback: If fetch is blocked (e.g. file:// protocol or aggressive security)
-            // but browser says online, show a simulated "System" latency
             const simulatedPing = Math.floor(Math.random() * 15) + 5;
             setPing(`${simulatedPing}ms`);
         }
@@ -45,7 +37,6 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
     checkPing();
     const pingTimer = setInterval(checkPing, 5000);
 
-    // Device Check
     const ua = navigator.userAgent;
     if (/Mobi|Android/i.test(ua)) {
         setDeviceType('MOBILE DEVICE');
@@ -58,6 +49,9 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
         clearInterval(pingTimer);
     };
   }, []);
+
+  const dateStr = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${date.getFullYear()}`;
+  const version = "v4.0.1 (MINOR)"; 
 
   return html`
     <div className="relative min-h-screen bg-[#050b14] overflow-hidden flex flex-col font-sans animate-fade-in text-white selection:bg-cyber-neon selection:text-black">
@@ -115,10 +109,13 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
           <h1 className="text-5xl md:text-7xl font-display font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyber-neon via-white to-cyber-purple drop-shadow-[0_0_15px_rgba(0,243,255,0.5)]">
             WELCOME USER
           </h1>
-          <div className="text-4xl md:text-6xl font-mono font-bold text-white tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] py-4">
-            <span>${time}</span>
+          <div className="text-4xl md:text-6xl font-mono font-bold text-white tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] py-2">
+            ${date.toLocaleTimeString()}
           </div>
-          <p className="text-cyber-slate font-mono text-sm md:text-base tracking-[0.3em] uppercase">
+          <div className="text-2xl md:text-4xl font-mono font-bold text-cyber-neon tracking-widest drop-shadow-[0_0_10px_rgba(0,243,255,0.8)] mb-4">
+            ${dateStr}
+          </div>
+          <p className="text-cyber-neon font-mono text-sm md:text-base tracking-[0.3em] uppercase drop-shadow-[0_0_5px_rgba(0,243,255,0.5)]">
             // Select Protocol to Initialize
           </p>
         </div>
@@ -186,13 +183,13 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
       </main>
 
       <footer className="relative z-10 bg-black border-t-2 border-white py-3 overflow-hidden shadow-[0_-5px_20px_rgba(255,255,255,0.1)]">
-        <div className="whitespace-nowrap animate-[marquee_20s_linear_infinite] font-mono text-sm font-bold text-white tracking-widest drop-shadow-[0_0_5px_white]">
-          <span className="mx-8">/// SYSTEM UPDATE V2.4: SECURITY PATCHES APPLIED</span>
-          <span className="mx-8">/// NEW GAMES ADDED TO DATABASE</span>
-          <span className="mx-8">/// DO NOT FORGET TO HYDRATE</span>
-          <span className="mx-8">/// REPORT BUGS TO ADMIN</span>
-          <span className="mx-8">/// ENJOY YOUR SESSION</span>
-          <span className="mx-8">/// SYSTEM STATUS: OPTIMAL</span>
+        <div className="whitespace-nowrap animate-[marquee_25s_linear_infinite] font-mono text-4xl font-black text-white tracking-widest drop-shadow-[0_0_10px_white] py-2 flex items-center">
+            <span className="text-cyber-neon mx-12">/// SYSTEM UPDATE ${version}: VISUAL PATCH APPLIED</span>
+            <span className="mx-12">NEW GAME DETECTED: SMASH KARTS</span>
+            <span className="text-cyber-pink mx-12">/// ALERT: MAGIC TILES 3 UNDER MAINTENANCE</span>
+            <span className="mx-12">/// WEEKLY TOP 3 LEADERBOARD ACTIVE</span>
+            <span className="mx-12">/// 2026 COPYRIGHT NEON ARCADE</span>
+            <span className="text-cyber-purple mx-12">/// REPORT BUGS VIA REQUEST FORM</span>
         </div>
       </footer>
       <style>

@@ -2,12 +2,18 @@
 export const GameCategory = {
   ALL: 'All Games',
   HOT: 'Trending',
+  NEW: 'New Arrivals',
+  RHYTHM: 'Rhythm & Music',
+  PHYSICS: 'Physics Chaos',
+  PLATFORMER: 'Precision Platformer',
+  RACING: 'High Speed Racing',
+  SPORTS: 'Competitive Sports',
+  PUZZLE: 'Logic & Puzzle',
+  ARCADE: 'Retro Arcade',
+  SURVIVAL: 'Survival',
+  MULTIPLAYER: 'Local Multiplayer',
   ACTION: 'Action',
-  RACING: 'Driving',
-  SPORTS: 'Sports',
-  STRATEGY: 'Strategy',
-  PUZZLE: 'Puzzle',
-  ARCADE: 'Arcade'
+  STRATEGY: 'Strategy'
 };
 
 export const GameType = {

@@ -15,14 +15,18 @@ const PanicIcon = html`
 `;
 
 const Clock = () => {
-  const [time, setTime] = useState(new Date().toLocaleTimeString());
+  const [date, setDate] = useState(new Date());
   useEffect(() => {
-    const timer = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
+    const timer = setInterval(() => setDate(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+  
+  const dateStr = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${date.getFullYear()}`;
+  
   return html`
-    <div className="font-mono text-xl md:text-2xl font-bold text-white drop-shadow-md tracking-wider mr-4">
-      <span>${time}</span>
+    <div className="flex flex-col items-end mr-4 font-mono text-white drop-shadow-[0_0_5px_rgba(0,243,255,0.5)]">
+      <span className="text-2xl md:text-3xl font-bold leading-none tracking-wider">${date.toLocaleTimeString()}</span>
+      <span className="text-sm md:text-base text-cyber-neon font-bold tracking-widest">${dateStr}</span>
     </div>
   `;
 };
@@ -175,58 +179,6 @@ const MaintenanceModal = ({ onClose, gameTitle }) => html`
   </div>
 `;
 
-const EasterEggNice = () => html`
-  <div className="fixed inset-0 z-[500] flex items-center justify-center pointer-events-none animate-fade-in">
-    <div className="text-9xl font-black text-cyber-neon drop-shadow-[0_0_30px_#00f3ff] transform -rotate-12 animate-pulse">
-      NICE
-    </div>
-  </div>
-`;
-
-const AdminLoginModal = ({ onClose, onLogin }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const uHash = btoa(username);
-    const pHash = btoa(password);
-    if (uHash === 'QWRtaW4=' && pHash === 'QmVsbGEuY29tMTI=') {
-      onLogin();
-      onClose();
-    } else {
-      setError('ACCESS DENIED: INVALID ENCRYPTION KEY');
-      setTimeout(() => setError(''), 3000);
-    }
-  };
-
-  return html`
-    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-fade-in" onClick=${onClose}>
-      <div className="bg-cyber-slate border border-cyber-neon/50 p-8 w-full max-w-sm relative" onClick=${e => e.stopPropagation()}>
-        <div className="absolute top-0 left-0 w-2 h-2 bg-cyber-neon"></div>
-        <div className="absolute top-0 right-0 w-2 h-2 bg-cyber-neon"></div>
-        <div className="absolute bottom-0 left-0 w-2 h-2 bg-cyber-neon"></div>
-        <div className="absolute bottom-0 right-0 w-2 h-2 bg-cyber-neon"></div>
-        <h2 className="text-2xl font-display font-bold text-white mb-6 text-center tracking-widest">SYSTEM LOGIN</h2>
-        <form onSubmit=${handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-mono text-cyber-neon mb-1">IDENTIFIER</label>
-            <input type="text" value=${username} onChange=${e => setUsername(e.target.value)} className="w-full bg-black border border-slate-700 p-2 text-white focus:border-cyber-neon focus:outline-none font-mono" />
-          </div>
-          <div>
-            <label className="block text-xs font-mono text-cyber-neon mb-1">PASSKEY</label>
-            <input type="password" value=${password} onChange=${e => setPassword(e.target.value)} className="w-full bg-black border border-slate-700 p-2 text-white focus:border-cyber-neon focus:outline-none font-mono" />
-          </div>
-          ${error && html`<p className="text-red-500 text-xs font-bold text-center animate-pulse">${error}</p>`}
-          <button type="submit" className="w-full bg-cyber-neon/10 border border-cyber-neon text-cyber-neon font-bold py-2 hover:bg-cyber-neon hover:text-black transition-all">AUTHENTICATE</button>
-        </form>
-      </div>
-    </div>
-  `;
-};
-
-// Defined outside render to prevent remounting
 const SidebarItem = ({ category, label, icon, isActive, onClick }) => html`
   <button
     onClick=${onClick}
@@ -251,56 +203,6 @@ const App = () => {
   const [showLibraryWarning, setShowLibraryWarning] = useState(false);
   const [maintenanceGame, setMaintenanceGame] = useState(null);
   
-  const [onlineUsers, setOnlineUsers] = useState(1243); // Initial realistic number
-  const [showLogin, setShowLogin] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [marqueeText, setMarqueeText] = useState("/// SYSTEM UPDATE V4.6.0: SCROLLING OPTIMIZED /// WELCOME TO NEON ARCADE /// REPORT BUGS VIA REQUEST FORM");
-  const [showEasterEgg, setShowEasterEgg] = useState(false);
-
-  // Deterministic "Real Time" Online Users
-  // Updates every 10 seconds based on global time seed
-  useEffect(() => {
-    const updateOnlineUsers = () => {
-      // Create a deterministic number based on the current 10-second window
-      // This ensures all users see the same number at the same time
-      const timeSeed = Math.floor(Date.now() / 10000); 
-      
-      // Seeded random function (simple)
-      const seededRandom = (seed) => {
-        let x = Math.sin(seed) * 10000;
-        return x - Math.floor(x);
-      };
-
-      // Base users + Time of day fluctuation (mock) + noise
-      const now = new Date();
-      const hour = now.getUTCHours();
-      // Peak times (14:00 - 02:00 UTC) have multiplier
-      const peakMultiplier = (hour > 14 || hour < 2) ? 1.5 : 0.8;
-      
-      const base = 1200 * peakMultiplier;
-      const noise = seededRandom(timeSeed) * 150; // Random fluctuation 0-150
-      
-      setOnlineUsers(Math.floor(base + noise));
-    };
-
-    updateOnlineUsers(); // Initial
-    const interval = setInterval(updateOnlineUsers, 10000); // 10s Update loop
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    let lastKey = '';
-    const handleKey = (e) => {
-      if (e.key === '7' && lastKey === '6') {
-        setShowEasterEgg(true);
-        setTimeout(() => setShowEasterEgg(false), 2000);
-      }
-      lastKey = e.key;
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, []);
-
   const handlePanic = () => { try { if (window.top && window.top !== window.self) window.top.location.replace(PANIC_URL); else window.location.replace(PANIC_URL); } catch (e) { window.location.replace(PANIC_URL); } };
 
   useEffect(() => {
@@ -332,16 +234,31 @@ const App = () => {
   if (activeGame) {
     const PanicIcon = html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 animate-pulse"><path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" /></svg>`;
     return html`
-      <div className="fixed inset-0 bg-cyber-black text-slate-200 flex flex-col font-sans animate-fade-in cursor-auto overflow-hidden">
+      <div className="min-h-screen bg-cyber-black text-slate-200 flex flex-col font-sans animate-fade-in cursor-auto">
         <header className="h-16 border-b border-cyber-slate bg-cyber-black sticky top-0 z-50 px-4 flex items-center justify-between shadow-neon-pink/20 flex-shrink-0">
            <div className="flex items-center gap-2 cursor-pointer hover:text-cyber-neon transition-colors" onClick=${() => { setActiveGame(null); setView('HOME'); }}>
              <span className="text-xl">←</span><span className="font-display font-bold tracking-widest hidden sm:inline">EXIT SIMULATION</span>
            </div>
            <div className="flex items-center gap-4"><${Clock} /><${Button} onClick=${handlePanic} variant="danger" size="md" icon=${PanicIcon} className="shadow-[0_0_15px_rgba(255,0,0,0.7)] hover:shadow-[0_0_25px_rgba(255,0,0,1)] font-bold tracking-widest border border-white/20">PANIC</${Button}></div>
         </header>
-        <main className="flex-1 overflow-hidden bg-black p-0 sm:p-4 relative">
+        <main className="flex-grow p-0 sm:p-4 h-[calc(100vh-64px)] bg-black">
           <${GamePlayer} game=${activeGame} onBack=${() => { setActiveGame(null); setView('LIBRARY'); }} />
         </main>
+      </div>
+    `;
+  }
+
+  if (view === 'HOME') {
+    return html`
+      <div>
+        ${showWelcome && html`<${WelcomeModal} onClose=${handleCloseWelcome} />`}
+        <${HomeMenu} 
+          onEnterLibrary=${handleEnterLibrary} 
+          onQuickPlay=${handleQuickPlay} 
+          featuredGame=${featuredGame} 
+          onPanic=${handlePanic}
+        />
+        ${maintenanceGame && html`<${MaintenanceModal} gameTitle=${maintenanceGame.title} onClose=${() => setMaintenanceGame(null)} />`}
       </div>
     `;
   }
@@ -349,38 +266,10 @@ const App = () => {
   const PanicIcon = html`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 animate-pulse"><path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" /></svg>`;
 
   return html`
-    <div className="fixed inset-0 bg-[#050b14] text-slate-200 font-sans flex overflow-hidden animate-fade-in">
+    <div className="min-h-screen bg-[#050b14] text-slate-200 font-sans flex overflow-hidden animate-fade-in">
       ${showWelcome && html`<${WelcomeModal} onClose=${handleCloseWelcome} />`}
       ${showLibraryWarning && html`<${LibraryWarningModal} onClose=${handleCloseLibWarning} />`}
       ${maintenanceGame && html`<${MaintenanceModal} gameTitle=${maintenanceGame.title} onClose=${() => setMaintenanceGame(null)} />`}
-      ${showLogin && html`<${AdminLoginModal} onClose=${() => setShowLogin(false)} onLogin=${() => setIsAdmin(true)} />`}
-      ${showEasterEgg && html`<${EasterEggNice} />`}
-
-      ${view === 'HOME' && html`
-         <div className="absolute inset-0 z-50 bg-[#050b14] flex flex-col">
-            <${HomeMenu} 
-              onEnterLibrary=${handleEnterLibrary} 
-              onQuickPlay=${handleQuickPlay} 
-              featuredGame=${featuredGame} 
-              onPanic=${handlePanic}
-              onlineUsers=${onlineUsers}
-              onLoginClick=${() => setShowLogin(true)}
-            />
-            <footer className="relative z-10 bg-black border-t-2 border-white py-4 overflow-hidden shadow-[0_-5px_20px_rgba(255,255,255,0.1)] flex-shrink-0">
-              <div className="whitespace-nowrap animate-[marquee_25s_linear_infinite] font-mono text-4xl font-black text-white tracking-widest drop-shadow-[0_0_10px_white] py-2 flex items-center">
-                <span className="text-cyber-neon mx-12"><span>${marqueeText}</span></span>
-                <span className="mx-12">/// ${APP_NAME} © ${new Date().getFullYear()}</span>
-              </div>
-              ${isAdmin && html`
-                <div className="absolute bottom-2 right-2 flex gap-2 bg-black/80 p-2 border border-cyber-neon">
-                  <span className="text-cyber-neon font-bold text-xs uppercase self-center mr-2">ADMIN CONTROLS:</span>
-                  <input type="text" value=${marqueeText} onChange=${e => setMarqueeText(e.target.value)} className="bg-slate-900 text-white text-xs border border-slate-600 px-2 py-1 w-64" placeholder="Update Marquee..." />
-                </div>
-              `}
-            </footer>
-            <style>@keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }</style>
-         </div>
-      `}
 
       <aside className=${`fixed inset-y-0 left-0 z-40 w-64 bg-[#0a0f1e] border-r border-cyber-slate/50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col flex-shrink-0`}>
         <div className="h-20 flex items-center px-6 border-b border-cyber-slate/50 cursor-pointer" onClick=${() => setView('HOME')}>
@@ -397,11 +286,12 @@ const App = () => {
           
           <div className="text-xs font-mono text-slate-600 mb-2 px-4 mt-6">GENRES</div>
           <${SidebarItem} isActive=${filter.category === GameCategory.ACTION} onClick=${() => setFilter(prev => ({ ...prev, category: GameCategory.ACTION }))} label="Action" icon="⚔️" />
-          <${SidebarItem} isActive=${filter.category === GameCategory.STRATEGY} onClick=${() => setFilter(prev => ({ ...prev, category: GameCategory.STRATEGY }))} label="Strategy" icon="🧠" />
           <${SidebarItem} isActive=${filter.category === GameCategory.RACING} onClick=${() => setFilter(prev => ({ ...prev, category: GameCategory.RACING }))} label="Racing" icon="🏎️" />
           <${SidebarItem} isActive=${filter.category === GameCategory.SPORTS} onClick=${() => setFilter(prev => ({ ...prev, category: GameCategory.SPORTS }))} label="Sports" icon="🏀" />
+          <${SidebarItem} isActive=${filter.category === GameCategory.STRATEGY} onClick=${() => setFilter(prev => ({ ...prev, category: GameCategory.STRATEGY }))} label="Strategy" icon="🧠" />
           <${SidebarItem} isActive=${filter.category === GameCategory.PUZZLE} onClick=${() => setFilter(prev => ({ ...prev, category: GameCategory.PUZZLE }))} label="Puzzle" icon="🧩" />
           <${SidebarItem} isActive=${filter.category === GameCategory.RHYTHM} onClick=${() => setFilter(prev => ({ ...prev, category: GameCategory.RHYTHM }))} label="Rhythm" icon="🎵" />
+          <${SidebarItem} isActive=${filter.category === GameCategory.PHYSICS} onClick=${() => setFilter(prev => ({ ...prev, category: GameCategory.PHYSICS }))} label="Physics" icon="⚛️" />
           <${SidebarItem} isActive=${filter.category === GameCategory.PLATFORMER} onClick=${() => setFilter(prev => ({ ...prev, category: GameCategory.PLATFORMER }))} label="Platformer" icon="🏃" />
           
           <div className="mt-8 px-4"><a href=${REQUEST_GAME_URL} target="_blank" className="block text-center py-2 border border-dashed border-slate-600 text-slate-500 text-xs hover:border-cyber-neon hover:text-cyber-neon transition-colors">+ REQUEST GAME</a></div>
