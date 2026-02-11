@@ -51,8 +51,7 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
   }, []);
 
   const dateStr = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${date.getFullYear()}`;
-  const version = "v4.0.1 (MINOR)"; 
-
+  
   return html`
     <div className="relative min-h-screen bg-[#050b14] overflow-hidden flex flex-col font-sans animate-fade-in text-white selection:bg-cyber-neon selection:text-black">
       
@@ -183,13 +182,18 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
       </main>
 
       <footer className="relative z-10 bg-black border-t-2 border-white py-3 overflow-hidden shadow-[0_-5px_20px_rgba(255,255,255,0.1)]">
-        <div className="whitespace-nowrap animate-[marquee_25s_linear_infinite] font-mono text-4xl font-black text-white tracking-widest drop-shadow-[0_0_10px_white] py-2 flex items-center">
-            <span className="text-cyber-neon mx-12">/// SYSTEM UPDATE ${version}: VISUAL PATCH APPLIED</span>
-            <span className="mx-12">NEW GAME DETECTED: SMASH KARTS</span>
-            <span className="text-cyber-pink mx-12">/// ALERT: MAGIC TILES 3 UNDER MAINTENANCE</span>
-            <span className="mx-12">/// WEEKLY TOP 3 LEADERBOARD ACTIVE</span>
-            <span className="mx-12">/// 2026 COPYRIGHT NEON ARCADE</span>
-            <span className="text-cyber-purple mx-12">/// REPORT BUGS VIA REQUEST FORM</span>
+        <div className="whitespace-nowrap animate-[marquee_45s_linear_infinite] font-mono text-4xl font-black text-white tracking-widest drop-shadow-[0_0_10px_white] py-2 flex items-center">
+            <span className="text-cyber-neon mx-12">/// SYSTEM UPDATE: HYPERLINKS AND ROUTING ADDED</span>
+            <span className="mx-12">/// NATIVE GAMES ENABLED: NEON SNAKE & PONG</span>
+            <span className="text-cyber-pink mx-12">/// MAINTENANCE ALERT: MAGIC TILES 3</span>
+            <span className="mx-12">/// SMASH KARTS ONLINE</span>
+            <span className="text-cyber-purple mx-12">/// REPORT BUGS</span>
+            
+            <span className="text-cyber-neon mx-12">/// SYSTEM UPDATE: HYPERLINKS AND ROUTING ADDED</span>
+            <span className="mx-12">/// NATIVE GAMES ENABLED: NEON SNAKE & PONG</span>
+            <span className="text-cyber-pink mx-12">/// MAINTENANCE ALERT: MAGIC TILES 3</span>
+            <span className="mx-12">/// SMASH KARTS ONLINE</span>
+            <span className="text-cyber-purple mx-12">/// REPORT BUGS</span>
         </div>
       </footer>
       <style>
