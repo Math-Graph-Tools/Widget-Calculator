@@ -211,6 +211,34 @@ const App = () => {
     window.addEventListener('keydown', handleKeyDown); return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Hash-based Routing
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#/game/')) {
+        const gameId = hash.replace('#/game/', '');
+        const game = GAMES_DATA.find(g => g.id === gameId);
+        if (game) {
+          if (game.maintenance) {
+            setMaintenanceGame(game);
+            // Reset hash so the user stays on "home" visually but sees modal
+            window.history.replaceState(null, null, ' ');
+          } else {
+            setActiveGame(game);
+          }
+        }
+      } else {
+        setActiveGame(null);
+      }
+    };
+
+    // Check URL on mount
+    handleHashChange();
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const filteredGames = useMemo(() => {
     return GAMES_DATA.filter(game => {
       const matchesSearch = game.title.toLowerCase().includes(filter.search.toLowerCase());
@@ -226,8 +254,28 @@ const App = () => {
   const handleCloseWelcome = () => { localStorage.setItem('neon_arcade_welcome_ack_v1', 'true'); setShowWelcome(false); };
   const handleEnterLibrary = () => { setView('LIBRARY'); const hasSeenLibWarning = localStorage.getItem('neon_arcade_lib_warning_v1'); if (!hasSeenLibWarning) { setShowLibraryWarning(true); } };
   const handleCloseLibWarning = () => { localStorage.setItem('neon_arcade_lib_warning_v1', 'true'); setShowLibraryWarning(false); };
-  const handleGameClick = (game) => { if (game.maintenance) { setMaintenanceGame(game); } else { setActiveGame(game); } };
-  const handleQuickPlay = (specificGame = null) => { if (specificGame) { if (specificGame.maintenance) { setMaintenanceGame(specificGame); } else { setActiveGame(specificGame); } } else { const availableGames = GAMES_DATA.filter(g => !g.maintenance); const randomGame = availableGames[Math.floor(Math.random() * availableGames.length)]; setActiveGame(randomGame); } };
+  
+  // Handlers now primarily interact with the URL hash
+  const handleGameClick = (game) => { 
+    if (game.maintenance) { 
+        setMaintenanceGame(game); 
+    } 
+    // If not maintenance, the Anchor tag in GameCard handles the hash change
+  };
+
+  const handleQuickPlay = (specificGame = null) => { 
+    if (specificGame) {
+       if (specificGame.maintenance) { 
+           setMaintenanceGame(specificGame); 
+       } else { 
+           window.location.hash = `#/game/${specificGame.id}`;
+       }
+    } else { 
+       const availableGames = GAMES_DATA.filter(g => !g.maintenance);
+       const randomGame = availableGames[Math.floor(Math.random() * availableGames.length)]; 
+       window.location.hash = `#/game/${randomGame.id}`;
+    } 
+  };
 
   if (isBooting) return html`<${BootSequence} onComplete=${handleBootComplete} />`;
 
@@ -236,13 +284,13 @@ const App = () => {
     return html`
       <div className="min-h-screen bg-cyber-black text-slate-200 flex flex-col font-sans animate-fade-in cursor-auto">
         <header className="h-16 border-b border-cyber-slate bg-cyber-black sticky top-0 z-50 px-4 flex items-center justify-between shadow-neon-pink/20 flex-shrink-0">
-           <div className="flex items-center gap-2 cursor-pointer hover:text-cyber-neon transition-colors" onClick=${() => { setActiveGame(null); setView('HOME'); }}>
+           <div className="flex items-center gap-2 cursor-pointer hover:text-cyber-neon transition-colors" onClick=${() => { window.location.hash = ''; }}>
              <span className="text-xl">←</span><span className="font-display font-bold tracking-widest hidden sm:inline">EXIT SIMULATION</span>
            </div>
            <div className="flex items-center gap-4"><${Clock} /><${Button} onClick=${handlePanic} variant="danger" size="md" icon=${PanicIcon} className="shadow-[0_0_15px_rgba(255,0,0,0.7)] hover:shadow-[0_0_25px_rgba(255,0,0,1)] font-bold tracking-widest border border-white/20">PANIC</${Button}></div>
         </header>
         <main className="flex-grow p-0 sm:p-4 h-[calc(100vh-64px)] bg-black">
-          <${GamePlayer} game=${activeGame} onBack=${() => { setActiveGame(null); setView('LIBRARY'); }} />
+          <${GamePlayer} game=${activeGame} onBack=${() => { window.location.hash = ''; }} />
         </main>
       </div>
     `;

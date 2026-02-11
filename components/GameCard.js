@@ -5,17 +5,17 @@ import { html } from 'htm/react';
 export const GameCard = ({ game, onClick }) => {
   const handleClick = (e) => {
     if (game.maintenance) {
-      e.stopPropagation();
+      e.preventDefault();
       onClick(game); 
-    } else {
-      onClick(game);
     }
+    // If not maintenance, allow default behavior (hash navigation)
   };
 
   return html`
-    <div 
+    <a 
+      href=${game.maintenance ? '#' : `#/game/${game.id}`}
       onClick=${handleClick}
-      className=${`group relative bg-cyber-slate rounded-sm overflow-hidden border border-cyber-slate transition-all duration-300 transform hover:-translate-y-1 
+      className=${`group relative block bg-cyber-slate rounded-sm overflow-hidden border border-cyber-slate transition-all duration-300 transform hover:-translate-y-1 no-underline 
         ${game.maintenance 
           ? 'cursor-not-allowed border-cyber-yellow/50 opacity-80 hover:shadow-[0_0_15px_#facc15]' 
           : 'cursor-pointer hover:border-cyber-neon hover:shadow-neon'}`}
@@ -81,6 +81,6 @@ export const GameCard = ({ game, onClick }) => {
           ${game.maintenance ? 'LOCKED' : 'INITIALIZE'}
         </span>
       </div>
-    </div>
+    </a>
   `;
 };
