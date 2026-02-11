@@ -88,7 +88,7 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-             <span className="font-mono text-xs text-cyber-neon tracking-widest">NET: ${ping}</span>
+             <span className="font-mono text-xs text-cyber-neon tracking-widest">NET: <span>${ping}</span></span>
           </div>
           <div className="font-mono text-xs text-slate-400 tracking-widest uppercase">SYS: ${deviceType}</div>
         </div>
@@ -116,7 +116,7 @@ export const HomeMenu = ({ onEnterLibrary, onQuickPlay, featuredGame, onPanic })
             WELCOME USER
           </h1>
           <div className="text-4xl md:text-6xl font-mono font-bold text-white tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.8)] py-4">
-            ${time}
+            <span>${time}</span>
           </div>
           <p className="text-cyber-slate font-mono text-sm md:text-base tracking-[0.3em] uppercase">
             // Select Protocol to Initialize

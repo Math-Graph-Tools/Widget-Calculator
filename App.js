@@ -22,7 +22,7 @@ const Clock = () => {
   }, []);
   return html`
     <div className="font-mono text-xl md:text-2xl font-bold text-white drop-shadow-md tracking-wider mr-4">
-      ${time}
+      <span>${time}</span>
     </div>
   `;
 };
@@ -368,7 +368,7 @@ const App = () => {
             />
             <footer className="relative z-10 bg-black border-t-2 border-white py-4 overflow-hidden shadow-[0_-5px_20px_rgba(255,255,255,0.1)] flex-shrink-0">
               <div className="whitespace-nowrap animate-[marquee_25s_linear_infinite] font-mono text-4xl font-black text-white tracking-widest drop-shadow-[0_0_10px_white] py-2 flex items-center">
-                <span className="text-cyber-neon mx-12">${marqueeText}</span>
+                <span className="text-cyber-neon mx-12"><span>${marqueeText}</span></span>
                 <span className="mx-12">/// ${APP_NAME} © ${new Date().getFullYear()}</span>
               </div>
               ${isAdmin && html`
